@@ -6,22 +6,24 @@ import datastruct.*;
 
 /**
  * @onlypatric
- * MainApp
+ *             MainApp
  * 
- * This class represents the main application for managing contacts. It provides a user interface for interacting with the contacts.
+ *             This class represents the main application for managing contacts.
+ *             It provides a user interface for interacting with the contacts.
  * @author Patric Pintescul
  * @see README.MD
  */
 public class MainApp {
-    private static String clearLn = "\033[F";  // Escape sequence for clearing the current line
-    private static String upLn = "\033[2K";    // Escape sequence for moving the cursor up and clearing the line
+    private static String clearLn = "\033[F"; // Escape sequence for clearing the current line
+    private static String upLn = "\033[2K"; // Escape sequence for moving the cursor up and clearing the line
 
     /**
      * Displays a menu and prompts the user to select an option.
      * 
-     * @param sc          Scanner object for user input
-     * @param clear       Specifies whether to clear the console before displaying the menu
-     * @param selections  The available menu options
+     * @param sc         Scanner object for user input
+     * @param clear      Specifies whether to clear the console before displaying
+     *                   the menu
+     * @param selections The available menu options
      * @return The selected menu option
      */
     private static int menuSelection(Scanner sc, boolean clear, String... selections) {
@@ -30,7 +32,7 @@ public class MainApp {
         int max = selections.length;
         int index;
         if (clear)
-            System.out.print("\033c");  // Clear console screen
+            System.out.print("\033c"); // Clear console screen
         System.out.println("Seleziona:");
         do {
             try {
@@ -41,25 +43,62 @@ public class MainApp {
                 System.out.print(" >>> ");
                 selection = Integer.parseInt(sc.nextLine());
             } catch (Exception e) {
-                System.out.print((clearLn + upLn).repeat(max + 2));  // Clear and move cursor up
+                System.out.print((clearLn + upLn).repeat(max + 2)); // Clear and move cursor up
                 System.out.println("ERRORE! Seleziona di nuovo:");
                 continue;
             }
             if (selection < min || selection > max) {
-                System.out.print((clearLn + upLn).repeat(max + 2));  // Clear and move cursor up
+                System.out.print((clearLn + upLn).repeat(max + 2)); // Clear and move cursor up
                 System.out.println("INVALIDO! Seleziona di nuovo:");
             }
         } while (selection < min || selection > max);
-        System.out.print((clearLn + upLn).repeat(max + 2));  // Clear and move cursor up
+        System.out.print((clearLn + upLn).repeat(max + 2)); // Clear and move cursor up
         return selection;
+    }
+
+    private static void printPhoneNumber(FSVector<Contact> contacts, Scanner sc) {
+        System.out.print("Cognome: ");
+        String surname = sc.nextLine();
+        System.out.print("Nome: ");
+        String name = sc.nextLine();
+
+        for (Contact contact : contacts) {
+            if (contact.getSurname().equalsIgnoreCase(surname) && contact.getName().equalsIgnoreCase(name)) {
+                System.out.println("Telefono: " + contact.getPhone().toString());
+                return;
+            }
+        }
+
+        System.out.println("Contatto non trovato.");
+    }
+
+    /**
+     * Given a phone number, prints the surname and name.
+     *
+     * @param contacts The vector of contacts
+     * @param sc       Scanner object for user input
+     */
+    private static void printNameAndSurname(FSVector<Contact> contacts, Scanner sc) {
+        System.out.print("Numero di telefono: ");
+        String phoneNumber = sc.nextLine();
+
+        for (Contact contact : contacts) {
+            if (contact.getPhone().getNumber().equals(phoneNumber)) {
+                System.out.println("Cognome: " + contact.getSurname());
+                System.out.println("Nome: " + contact.getName());
+                return;
+            }
+        }
+
+        System.out.println("Contatto non trovato.");
     }
 
     /**
      * Prompts the user to enter an integer within a specified range.
      * 
-     * @param sc   Scanner object for user input
-     * @param min  The minimum allowed value
-     * @param max  The maximum allowed value
+     * @param sc  Scanner object for user input
+     * @param min The minimum allowed value
+     * @param max The maximum allowed value
      * @return The validated input value
      */
     private static int safeNextInt(Scanner sc, int min, int max) {
@@ -69,14 +108,14 @@ public class MainApp {
                 System.out.print(" >>> ");
                 x = Integer.parseInt(sc.nextLine());
             } catch (Exception e) {
-                System.out.print((clearLn + upLn).repeat(2));  // Clear and move cursor up
+                System.out.print((clearLn + upLn).repeat(2)); // Clear and move cursor up
                 continue;
             }
             if (x < min || x > max) {
-                System.out.print((clearLn + upLn).repeat(2));  // Clear and move cursor up
+                System.out.print((clearLn + upLn).repeat(2)); // Clear and move cursor up
             }
         } while (x < min || x > max);
-        System.out.print((clearLn + upLn).repeat(2));  // Clear and move cursor up
+        System.out.print((clearLn + upLn).repeat(2)); // Clear and move cursor up
         return x;
     }
 
@@ -86,15 +125,15 @@ public class MainApp {
      * @param args Command line arguments
      */
     public static void main(String[] args) {
-        FSVector<Contact> contacts = new FSVector<Contact>();  // Create a new vector to store contacts
-        Scanner sc = new Scanner(System.in);  // Create a scanner object to read user input
-        int mode = menuSelection(sc, true, "Standard user mode", "CLI Dev mode");  // Prompt the user to select a mode
+        FSVector<Contact> contacts = new FSVector<Contact>(); // Create a new vector to store contacts
+        Scanner sc = new Scanner(System.in); // Create a scanner object to read user input
+        int mode = menuSelection(sc, true, "Standard user mode", "CLI Dev mode"); // Prompt the user to select a mode
         switch (mode) {
             case 1:
-                userMode(contacts, sc);  // Run user mode
+                userMode(contacts, sc); // Run user mode
                 break;
             case 2:
-                devMode(contacts, sc);  // Run developer mode
+                devMode(contacts, sc); // Run developer mode
                 break;
 
             default:
@@ -112,7 +151,8 @@ public class MainApp {
         boolean nextClear = true;
         while (true) {
             int action = menuSelection(sc, nextClear, "Leggi un contatto", "Aggiungi un contatto",
-                    "Aggiorna un contatto", "Elimina un contatto", "Esci dal programma");
+                    "Aggiorna un contatto", "Elimina un contatto", "Stampa telefono da cognome e nome",
+                    "Stampa cognome e nome da telefono", "Esci dal programma");
             nextClear = true;
             switch (action) {
                 case 1:
@@ -139,7 +179,7 @@ public class MainApp {
                     if (phone == "")
                         break;
                     contacts.add(new Contact(new PhoneNumber(prefix, phone), name, surname));
-                    System.out.println("\033c");  // Clear console screen
+                    System.out.println("\033c"); // Clear console screen
                     System.out.println("Contatto aggiunto con successo!");
                     break;
                 case 3:
@@ -176,7 +216,7 @@ public class MainApp {
                             break;
                     }
 
-                    System.out.println("\033c");  // Clear console screen
+                    System.out.println("\033c"); // Clear console screen
                     System.out.println("Contatto aggiornato con successo!");
                     break;
                 case 4:
@@ -184,8 +224,14 @@ public class MainApp {
                             contacts.length());
                     int deletePos = safeNextInt(sc, 1, contacts.length());
                     contacts.pop(deletePos - 1);
-                    System.out.println("\033c");  // Clear console screen
+                    System.out.println("\033c"); // Clear console screen
                     System.out.println("Contatto eliminato con successo!");
+                    break;
+                case 5:
+                    printPhoneNumber(contacts, sc);
+                    break;
+                case 6:
+                    printNameAndSurname(contacts, sc);
                     break;
                 default:
                     return;
@@ -201,6 +247,7 @@ public class MainApp {
      */
     private static void devMode(FSVector<Contact> contacts, Scanner sc) {
         System.out.println("Scrivi HELP per aiuto");
+        String name, surname, prefix, phone, newData, phoneNumber;
         while (true) {
             try {
                 System.out.print("Enter a command: ");
@@ -227,10 +274,10 @@ public class MainApp {
                             System.out.println("Invalid command. Usage: ADD <name> <surname> <prefix> <phone>");
                             break;
                         }
-                        String name = commandParts[1];
-                        String surname = commandParts[2];
-                        String prefix = commandParts[3];
-                        String phone = commandParts[4];
+                        name = commandParts[1];
+                        surname = commandParts[2];
+                        prefix = commandParts[3];
+                        phone = commandParts[4];
                         contacts.add(new Contact(new PhoneNumber(prefix, phone), name, surname));
                         System.out.println("Contatto aggiunto con successo!");
                         break;
@@ -245,7 +292,7 @@ public class MainApp {
                             break;
                         }
                         Contact contactToUpdate = contacts.get(updatePos - 1);
-                        String newData = commandParts[2];
+                        newData = commandParts[2];
                         contactToUpdate.setName(newData);
                         System.out.println("Contatto aggiornato con successo!");
                         break;
@@ -262,6 +309,42 @@ public class MainApp {
                         contacts.pop(removePos - 1);
                         System.out.println("Contatto eliminato con successo!");
                         break;
+                    case "searchphone":
+                        if (commandParts.length < 3) {
+                            System.out.println("Invalid command. Usage: SEARCHPHONE <surname> <name>");
+                            break;
+                        }
+                        surname = commandParts[1];
+                        name = commandParts[2];
+
+                        for (Contact contact : contacts) {
+                            if (contact.getSurname().equalsIgnoreCase(surname)
+                                    && contact.getName().equalsIgnoreCase(name)) {
+                                System.out.println("Telefono: " + contact.getPhone().toString());
+                                return;
+                            }
+                        }
+
+                        System.out.println("Contatto non trovato.");
+                        break;
+                    case "searchname":
+                        if (commandParts.length < 2) {
+                            System.out.println("Invalid command. Usage: SEARCHNAME <phone>");
+                            break;
+                        }
+                        phoneNumber = commandParts[1];
+
+                        for (Contact contact : contacts) {
+                            if (contact.getPhone().getNumber().equals(phoneNumber)) {
+                                System.out.println("Cognome: " + contact.getSurname());
+                                System.out.println("Nome: " + contact.getName());
+                                return;
+                            }
+                        }
+
+                        System.out.println("Contatto non trovato.");
+                        break;
+
                     case "length":
                         System.out.println("Number of contacts: " + contacts.length());
                         break;
@@ -270,6 +353,8 @@ public class MainApp {
                         System.out.println("\tREAD <position> -> read a contact");
                         System.out.println("\tADD <name> <surname> <prefix> <phone> -> add a contact");
                         System.out.println("\tUPDATE <position> <newData> -> update a contact");
+                        System.out.println("\tSEARCHPHONE <surname> <name> -> Search by name & surname");
+                        System.out.println("\tSEARCHNAME <phone> -> Search by phone number");
                         System.out.println("\tREMOVE <position> -> remove a contact");
                         System.out.println("\tLENGTH -> number of contacts");
                         System.out.println("\tHELP -> this command");
