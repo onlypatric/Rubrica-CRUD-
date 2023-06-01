@@ -49,3 +49,8 @@ Contributions are welcome! If you find any issues or have suggestions for improv
 ## License
 This project is licensed under the MIT License.
 
+## Author
+This project was developed by Patric Pintescul.
+
+Email: patric.personal99@gmail.com
+GitHub: https://www.github.com/onlypatric

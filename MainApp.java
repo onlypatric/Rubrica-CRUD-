@@ -5,9 +5,12 @@ import java.util.Scanner;
 import datastruct.*;
 
 /**
+ * @onlypatric
  * MainApp
  * 
  * This class represents the main application for managing contacts. It provides a user interface for interacting with the contacts.
+ * @author Patric Pintescul
+ * @see README.MD
  */
 public class MainApp {
     private static String clearLn = "\033[F";  // Escape sequence for clearing the current line
