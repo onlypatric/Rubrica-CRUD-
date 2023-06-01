@@ -32,7 +32,9 @@ In User Mode, the application presents a menu with options to perform various co
 2. Add a contact: Prompts for contact information and adds it to the contact list.
 3. Update a contact: Allows updating the details of an existing contact.
 4. Remove a contact: Deletes a contact from the contact list.
-5. Exit the program: Terminates the application.
+5. Print phone number from surname and name: Prints the phone number associated with a given surname and name.
+6. Print surname and name from phone number: Prints the surname and name associated with a given phone number.
+7. Exit the program: Terminates the application.
 
 ## Developer Mode
 In Developer Mode, the application allows interaction via command-line commands. Available commands include:
@@ -41,6 +43,8 @@ In Developer Mode, the application allows interaction via command-line commands.
  - `ADD <str name> <str surname> <str prefix> <str phone>`: Adds a contact with the provided details.
  - `UPDATE <position> <newData>`: Updates the name of a contact at the specified position.
  - `REMOVE <position>`: Removes a contact at the specified position.
+ - SEARCHPHONE <surname> <name>: Prints the phone number associated with a given surname and name.
+ - SEARCHNAME <phone>: Prints the surname and name associated with a given phone number.
  - `LENGTH`: Displays the number of contacts.
  - `HELP`: Provides a list of available commands.
 ## Contributing
