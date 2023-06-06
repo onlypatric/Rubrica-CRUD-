@@ -8,10 +8,18 @@ public class Contact {
     private PhoneNumber phone;
     private String name;
     private String surname;
-    public Contact(PhoneNumber phone, String name, String surname) {
+    private DateTime dateOfBirth;
+    public DateTime getDateOfBirth() {
+        return dateOfBirth;
+    }
+    public void setDateOfBirth(DateTime dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+    public Contact(PhoneNumber phone, String name, String surname, DateTime dateOfBirth) {
         this.phone = phone;
         this.name = name;
         this.surname = surname;
+        this.dateOfBirth = dateOfBirth;
     }
     public PhoneNumber getPhone() {
         return phone;
@@ -79,6 +87,7 @@ public class Contact {
         r+=String.format("| nome: %-14s|\n",name);
         r+=String.format("| cognome: %-11s|\n",surname);
         r+=String.format("| Tel: %-15s|\n",phone);
+        r+=String.format("| Date: %-10s|\n",dateOfBirth);
         r+="*---------------------*\n";
         return r;
     }

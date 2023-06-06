@@ -1,17 +1,19 @@
-import fsvec.FSVector;
-
 import java.util.Scanner;
 
+import fsvec.FSVector;
 import datastruct.*;
 
 /**
- * @onlypatric
- *             MainApp
+ * MainApp
  * 
- *             This class represents the main application for managing contacts.
- *             It provides a user interface for interacting with the contacts.
+ * This class represents the main application for managing contacts.
+ * It provides a user interface for interacting with the contacts.
+ * 
  * @author Patric Pintescul
- * @see README.MD
+ * @see fsvec.FSVector
+ * @see datastruct.Contact
+ * @see datastruct.PhoneNumber
+ * 
  */
 public class MainApp {
     private static String clearLn = "\033[F"; // Escape sequence for clearing the current line
@@ -178,7 +180,18 @@ public class MainApp {
                     String phone = sc.nextLine();
                     if (phone == "")
                         break;
-                    contacts.add(new Contact(new PhoneNumber(prefix, phone), name, surname));
+                    String date;
+                    DateTime dt = new DateTime(0, 0, 0);
+                    System.out.print("Data di nascita (gg/mm/aaaa):");
+                    date = sc.nextLine();
+                    try {
+                        dt.setDate(date);
+                    } catch (Exception e) {
+                        System.out.println("Formato data non riconosciuto...");
+                        break;
+                    }
+
+                    contacts.add(new Contact(new PhoneNumber(prefix, phone), name, surname, dt));
                     System.out.println("\033c"); // Clear console screen
                     System.out.println("Contatto aggiunto con successo!");
                     break;
@@ -188,7 +201,7 @@ public class MainApp {
                     int updatePos = safeNextInt(sc, 1, contacts.length());
                     Contact contactToUpdate = contacts.get(updatePos - 1);
 
-                    int attributeToUpdate = menuSelection(sc, true, "Nome", "Cognome", "Prefisso", "Telefono");
+                    int attributeToUpdate = menuSelection(sc, true, "Nome", "Cognome", "Prefisso", "Telefono","Data di nascita");
                     String updatedValue = "";
 
                     switch (attributeToUpdate) {
@@ -211,6 +224,20 @@ public class MainApp {
                             System.out.print("Nuovo telefono: ");
                             updatedValue = sc.nextLine();
                             contactToUpdate.getPhone().setNumber(updatedValue);
+                            break;
+                        case 5:
+                            DateTime dt2 = new DateTime(0, 0, 0);
+                            do {
+                                System.out.print("Nuova data di nascita (gg/mm/aaaa):");
+                                date = sc.nextLine();
+                                try {
+                                    dt2.setDate(date);
+                                    break;
+                                } catch (Exception e) {
+                                    System.out.println("Formato non riconosciuto...");
+                                }
+                            } while (true);
+                            contactToUpdate.setDateOfBirth(dt2);
                             break;
                         default:
                             break;
@@ -247,7 +274,7 @@ public class MainApp {
      */
     private static void devMode(FSVector<Contact> contacts, Scanner sc) {
         System.out.println("Scrivi HELP per aiuto");
-        String name, surname, prefix, phone, newData, phoneNumber;
+        String name, surname, prefix, phone, phoneNumber;
         while (true) {
             try {
                 System.out.print("Enter a command: ");
@@ -270,31 +297,48 @@ public class MainApp {
                         System.out.println(contacts.get(readPos - 1).detailedToString());
                         break;
                     case "add":
-                        if (commandParts.length < 5) {
-                            System.out.println("Invalid command. Usage: ADD <name> <surname> <prefix> <phone>");
-                            break;
+                        try {
+                            if (commandParts.length < 6) {
+                                System.out.println(
+                                        "Invalid command. Usage: ADD <name> <surname> <prefix> <phone> <gg/mm/aaaa>");
+                                break;
+                            }
+                            name = commandParts[1];
+                            surname = commandParts[2];
+                            prefix = commandParts[3];
+                            phone = commandParts[4];
+                            DateTime date = new DateTime(0, 0, 0);
+                            date.setDate(commandParts[5]);
+
+                            contacts.add(new Contact(new PhoneNumber(prefix, phone), name, surname, date));
+                            System.out.println("Contatto aggiunto con successo!");
+                        } catch (Exception e) {
+                            System.out.println("Error while executing command");
                         }
-                        name = commandParts[1];
-                        surname = commandParts[2];
-                        prefix = commandParts[3];
-                        phone = commandParts[4];
-                        contacts.add(new Contact(new PhoneNumber(prefix, phone), name, surname));
-                        System.out.println("Contatto aggiunto con successo!");
                         break;
                     case "update":
-                        if (commandParts.length < 3) {
-                            System.out.println("Invalid command. Usage: UPDATE <position> <newData>");
-                            break;
+                        try {
+                            if (commandParts.length < 3) {
+                                System.out.println(
+                                        "Invalid command. Usage: UPDATE <position> <name> <surname> <prefix> <phone> <gg/mm/aaaa>");
+                                break;
+                            }
+                            int updatePos = Integer.parseInt(commandParts[1]);
+                            if (updatePos < 1 || updatePos > contacts.length()) {
+                                System.out.println("Invalid position.");
+                                break;
+                            }
+                            Contact contactToUpdate = contacts.get(updatePos - 1);
+                            contactToUpdate.setName(commandParts[2]);
+                            contactToUpdate.setSurname(commandParts[3]);
+                            contactToUpdate.setPhone(new PhoneNumber(commandParts[4], commandParts[5]));
+                            DateTime dt = new DateTime(0, 0, 0);
+                            dt.setDate(commandParts[6]);
+                            contactToUpdate.setDateOfBirth(dt);
+                            System.out.println("Contatto aggiornato con successo!");
+                        } catch (Exception e) {
+                            System.out.println("Error while executing command");
                         }
-                        int updatePos = Integer.parseInt(commandParts[1]);
-                        if (updatePos < 1 || updatePos > contacts.length()) {
-                            System.out.println("Invalid position.");
-                            break;
-                        }
-                        Contact contactToUpdate = contacts.get(updatePos - 1);
-                        newData = commandParts[2];
-                        contactToUpdate.setName(newData);
-                        System.out.println("Contatto aggiornato con successo!");
                         break;
                     case "remove":
                         if (commandParts.length < 2) {
@@ -321,7 +365,6 @@ public class MainApp {
                             if (contact.getSurname().equalsIgnoreCase(surname)
                                     && contact.getName().equalsIgnoreCase(name)) {
                                 System.out.println("Telefono: " + contact.getPhone().toString());
-                                return;
                             }
                         }
 
@@ -338,7 +381,6 @@ public class MainApp {
                             if (contact.getPhone().getNumber().equals(phoneNumber)) {
                                 System.out.println("Cognome: " + contact.getSurname());
                                 System.out.println("Nome: " + contact.getName());
-                                return;
                             }
                         }
 
@@ -351,7 +393,7 @@ public class MainApp {
                     case "help":
                         System.out.println("Available commands:");
                         System.out.println("\tREAD <position> -> read a contact");
-                        System.out.println("\tADD <name> <surname> <prefix> <phone> -> add a contact");
+                        System.out.println("\tADD <name> <surname> <prefix> <phone> <birth [gg/mm/aaaa]> -> add a contact");
                         System.out.println("\tUPDATE <position> <newData> -> update a contact");
                         System.out.println("\tSEARCHPHONE <surname> <name> -> Search by name & surname");
                         System.out.println("\tSEARCHNAME <phone> -> Search by phone number");
